@@ -1,1 +1,64 @@
-hello Ekane
+hello Ekane this is for ul
+
+
+
+---------------------------------------------------------------------------
+#!/bin/sh
+
+echo "🔍 Running pre-commit checks..."
+
+# 1) Block empty commit
+if git diff --cached --quiet; then
+  echo "❌ Nothing staged. Commit blocked!"
+  exit 1
+fi
+
+# 2) Block trailing spaces
+if git diff --cached | grep -n " $"; then
+  echo "❌ Trailing spaces found. Fix them before commit."
+  exit 1
+fi
+
+echo "✅ pre-commit passed!"
+exit 0
+
+----------------------------------------------------------------------------------------------
+
+
+
+
+#!/bin/sh
+
+COMMIT_MSG_FILE=$1
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+# Rule: Must start with JIRA-ID like ABC-123
+PATTERN="^[A-Z]+-[0-9]+: .+"
+
+if ! echo "$COMMIT_MSG" | grep -Eq "$PATTERN"; then
+  echo "❌ Invalid commit message!"
+  echo "✅ Use format: JIRA-123: message"
+  exit 1
+fi
+
+echo "✅ commit-msg passed!"
+exit 0
+
+-------------------------------------------------------------------------------------
+#!/bin/sh
+
+echo "🚀 Running pre-push hook..."
+
+# Example: Check if package.json exists (Node project)
+if [ -f "package.json" ]; then
+  echo "📦 Node project detected. Running tests..."
+  npm test
+
+  if [ $? -ne 0 ]; then
+    echo "❌ Tests failed. Push blocked!"
+    exit 1
+  fi
+fi
+
+echo "✅ pre-push passed!"
+exit 0
